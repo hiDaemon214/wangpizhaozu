@@ -1,89 +1,62 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-# @Date    : 2017-08-13 19:16:30
-# @Author  : Your Name (you@example.org)
-# @Link    : http://example.org
-# @Version : $Id$
-
+# coding:utf-8
 import os
 from bs4 import BeautifulSoup
-
 import requests
 
+def showinfo(tags):
+	#print "LEN:"+str(len(tags))
+	import time
+	time_now =  time.strftime("%Y-%m-%d",time.localtime())
+	iloop = 0
+	tag_list = []
+	for tag in tags:
+		#print(tag)
+		#num
+		iloop = iloop + 1
+		#print "NUMBER:"+str(iloop)
 
-html = """
-<html>
-    <head>
-        <title>Page title</title>
-    </head>
-    <body>
-        <p id="firstpara" align="center">
-        This is paragraph<b>one</b>.
-        </p>
-        <p id="secondpara" align="blah">
-        This is paragraph<b>two</b>.
-        </p>
-     </body>
-</html> """
-#全部URL
-#url = "http://chuzu.17zwd.com/?zd=2&fl=all&dx=all&sc=all&page=%s"%(2)
-url = "http://chuzu.17zwd.com/?zd=1&fl=all"
-#大西豪URL
-#url = "http://chuzu.17zwd.com/?zd=2&fl=all&dx=all&sc=%E5%A4%A7%E8%A5%BF%E8%B1%AA"
-print "url:"+url
-page = requests.get(url).text
+		title = tag.h5.string
+		#print (tag.find(class_="sizeCont").string)
+		#print(str(iloop)+":"+tag.select(".content")[0].get_text())
+		# tag_list.insert(0,str(iloop)+tag.select(".content")[0].get_text())
+		content = tag.select(".all-text-content")[0].get_text()
+		#print tag.find(class_="phone")
+		date =  tag.find(class_="time fl").string
 
-#print(page)
+		sizeCont = tag.select(".sizeCont")[0].get_text()
 
+		# #telphoneex
+		tel =  tag.select(".phone")[0].get_text()
+		#print tel
+		# #port
+		#port =  tag.select(".content")[0].get_text()
+		#print port
+		#print port
 
-soup = BeautifulSoup(page,'html.parser')
-# print soup.title
-# print "####"*30
-
-# print soup.title.name
-# print "####"*30
-
-# print soup.title.string
-# print "####"*30
-
-# print soup.title.parent.name
-# print "####"*30
-
-# print soup.p
-# print "####"*30
+		# #date
+		print "[%s]title:%s,content:%s\t,size:%s\t,date:%s\t,tel:%s\t"%(iloop,title,content,sizeCont,date,tel)
+		#out_str = "日期:%s    ,电话:%s    ,信息:%s"%(tel.decode('utf-8'),port,date)
+		#print(out_str)
+		#print tag
+		#print "##" * 50
+		#print("==="*6)
+	# for i in tag_list:
+	# 	print i
 
 
 
-# print soup.a
-# print "####"*30
+def main():
+	import time
+	urls = []
+	urls= ("http://chuzu.17zwd.com/?zd=1&fl=all&page=2","http://chuzu.17zwd.com/?zd=1&fl=all")
+	for url in urls:
+		print "url:"+url
+		page = requests.get(url,timeout=3).text
 
-tags = soup.body.find_all(class_="infoCont")
-#print "LEN:"+str(len(tags))
-import time
-time_now =  time.strftime("%Y-%m-%d",time.localtime())
-iloop = 0
-for tag in tags:
+		#print page
+		soup = BeautifulSoup(page,"html.parser")
+		tags = soup.body.find_all(class_="infoCont")
+		showinfo(tags)
 
-
-	#num
-	#print "NUMBER:"+str(iloop)
-
-	#telphone
-	tel =  str(tag.find(class_="phone").string)
-
-	#port
-	port =  tag.find(class_="content").string
-
-	#date
-	date = tag.find(class_="time fl").string
-	if date == time_now:
-		iloop += 1
-		print "num%s,date:%s    ,tel:%s    ,info:%s"%(iloop,date,tel,port)
-	#out_str = "日期:%s    ,电话:%s    ,信息:%s"%(tel.decode('utf-8'),port,date)
-	#print(out_str)
-	#print tag
-	#print "##" * 50
-
-
-
-
+if __name__ == '__main__':
+	main()
